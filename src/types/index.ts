@@ -167,6 +167,32 @@ export interface IpsDocument {
   approvedAt?: string
 }
 
+// ─── Market data / analytics ─────────────────────────────────────────────────
+
+/** One calendar-year return for a single asset class. */
+export interface YearlyReturn {
+  year:   number
+  return: number  // % annual total return, MXN base currency
+}
+
+/** Full return history for one asset class. */
+export interface AssetClassTimeSeries {
+  assetClassId: string
+  returns:      YearlyReturn[]
+}
+
+/**
+ * Annualized covariance matrix expressed in %² units
+ * (i.e. 1% vol asset has variance 1.0, not 0.0001).
+ * Row/column order is given by `assetClassIds`.
+ */
+export interface CovarianceMatrix {
+  assetClassIds:  string[]    // length N — defines row / col order
+  matrix:         number[][]  // N×N symmetric, positive semi-definite
+  estimatedFrom:  string      // estimation period, e.g. "2005-2024"
+  note:           string
+}
+
 // ─── Navigation ──────────────────────────────────────────────────────────────
 
 export interface NavItem {
