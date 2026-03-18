@@ -2,22 +2,49 @@
 
 export type RiskProfile = 'conservador' | 'moderado' | 'balanceado' | 'crecimiento' | 'agresivo'
 
+/** Three-bucket label used on the KYC result screen only. */
+export type KycProfile3 = 'conservador' | 'moderado' | 'agresivo'
+
+export type KycDimension = 'capacidad' | 'apetito'
+
+export type KycSubdimension =
+  | 'horizonte_temporal'
+  | 'situacion_patrimonial'
+  | 'liquidez'
+  | 'tolerancia_perdidas'
+  | 'experiencia_inversora'
+  | 'expectativa_retorno'
+
+export interface KycOption {
+  label: string
+  score: 0 | 1 | 2 | 3 | 4
+}
+
 export interface KycQuestion {
   id: string
-  section: string
+  dimension: KycDimension
+  subdimension: KycSubdimension
   text: string
-  options: { label: string; value: number }[]
+  options: KycOption[]
 }
 
-export interface KycAnswer {
-  questionId: string
-  value: number
+/** Raw answer: maps questionId → option score (0–4). */
+export type KycAnswers = Record<string, number>
+
+export interface KycScores {
+  capacidad: number                               // 0–100
+  apetito: number                                 // 0–100
+  efectivo: number                                // 0–100, gap-corrected
+  brecha: number                                  // |capacidad – apetito|
+  tieneBrecha: boolean                            // brecha > BRECHA_THRESHOLD
+  subdimensiones: Record<KycSubdimension, number> // 0–100 each
 }
 
-export interface KycResult {
-  totalScore: number
-  profile: RiskProfile
-  answers: KycAnswer[]
+export interface KycAssessment {
+  scores: KycScores
+  perfil: RiskProfile         // 5-level, used by SAA / benchmarks
+  perfil3: KycProfile3        // 3-level display label
+  answers: KycAnswers
   completedAt: string
 }
 
